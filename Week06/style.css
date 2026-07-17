@@ -1,0 +1,40 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+}
+
+.container {
+    width: 350px;
+    margin: auto;
+}
+
+h1 {
+    margin-bottom: 15px;
+}
+
+input {
+    padding: 8px;
+    width: 220px;
+}
+
+button {
+    padding: 8px 12px;
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+#Todo div {
+    margin-top: 10px;
+    padding: 8px;
+    border: 1px solid #ccc;
+}
+
+#Todo button {
+    margin-left: 10px;
+}
