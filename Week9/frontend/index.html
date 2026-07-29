@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <style>
+        #main {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            border: 1px solid black;
+        }
+
+        #notes {
+            width: 45%;
+            border: 1px solid black;
+        }
+
+        #main2 {
+            width: 45%;
+            border: 1px solid black;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #note {
+            flex: 1;
+            border: 1px solid black;
+        }
+
+
+    </style>
+</head>
+<body>
+    <h1>Notes App</h1>
+    <div id="main">
+        
+        <div id="notes">
+            <p> Loading..............</p>
+        </div>
+
+        <div id="main2">
+            <input type="text" id="note" placeholder="Enter your note...">
+
+            <button onclick="createNote()">Add Note</button>
+        </div>
+    </div>
+
+    <script>
+        async function createNote() {
+           const note = document.getElementById('note').value;
+           const response = await axios.post('http://localhost:3000/notes', {
+                note: note
+           });
+           document.getElementById('note').value = '';
+           displayNotes();
+        }
+        
+        async function displayNotes() {
+            const response = await axios.get('http://localhost:3000/notes');
+            const notes = response.data.notes;
+            
+            document.getElementById('notes').innerHTML = "";
+            for(let i = 0; i< notes.length; i++) {
+                const NoteDiv = document.createElement('div');
+                NoteDiv.innerText = notes[i];
+                document.getElementById('notes').appendChild(NoteDiv);
+            }
+        }
+
+        displayNotes();
+
+    </script>
+    
+</body>
+</html>
