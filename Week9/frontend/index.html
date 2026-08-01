@@ -56,19 +56,28 @@
            const note = document.getElementById('note').value;
            const response = await axios.post('http://localhost:3000/notes', {
                 note: note
-           });
+           }, {
+                headers: {
+                    'token': localStorage.getItem('token')
+                }
+           }
+        );
            document.getElementById('note').value = '';
            displayNotes();
         }
         
         async function displayNotes() {
-            const response = await axios.get('http://localhost:3000/notes');
+            const response = await axios.get('http://localhost:3000/notes', {
+                headers: {
+                    'token': localStorage.getItem('token')
+                }
+            });
             const notes = response.data.notes;
             
             document.getElementById('notes').innerHTML = "";
             for(let i = 0; i< notes.length; i++) {
                 const NoteDiv = document.createElement('div');
-                NoteDiv.innerText = notes[i];
+                NoteDiv.innerText = notes[i].note;
                 document.getElementById('notes').appendChild(NoteDiv);
             }
         }

@@ -1,35 +1,91 @@
 const express = require('express');
 const app = express()
 const cors = require('cors');
-
-app.use(cors());
-app.use(express.json());
+const jwt = require('jsonwebtoken');
+const { authMiddleware } = require('./middleware');
 const path = require('path');
 const port = 3000
 
-app.get('/', (req, res) => {
+app.use(cors());
+app.use(express.json());
+
+
+app.get('/signin', (req, res) => {
+    res.sendFile(path.join(__dirname, '../Week9/frontend/signin.html'))
+})
+
+app.get('/signup', (req, res) => {
+    res.sendFile(path.join(__dirname, '../Week9/frontend/signup.html'))
+})
+
+app.get('/index', (req, res) => {
     res.sendFile(path.join(__dirname, '../Week9/frontend/index.html'))
 })
 
 
 const notes = []
+const users = []
 
-app.post('/notes', (req, res) => {
-    // Handle POST request for creating notes
+app.post('/signup', (req, res) => {
+    // Handle POST request for user signup
+    const username = req.body.username;
+    const password = req.body.password;
+
+    const userAlreadyExists = users.find(user => user.username === username);
+
+    if (userAlreadyExists) {
+        return res.status(403).json({ message: "User already exists" });
+    }
+
+    users.push({
+        username: username,
+        password: password
+    });
+
+    res.json({
+        message: "User created successfully"
+    });
+})
+
+app.post('/signin', (req, res) => {
+    // Handle POST request for user signin
+    const username = req.body.username;
+    const password = req.body.password;
+
+    const userAlreadyExists = users.find(user => user.username === username && user.password === password);
+
+    if (!userAlreadyExists) {
+        return res.status(403).json({
+            message: "Invalid username or password"
+        });
+    }
+
+    const token = jwt.sign({
+        username: username
+    }, "sevanth"
+    );
+
+    res.json({
+        message: "User signed in successfully",
+        token: token
+    });
+})
+
+
+
+app.post('/notes', authMiddleware, (req, res) => {
     const note = req.body.note;
-
-    notes.push(note);
-
+    notes.push({ note, username: req.username });
     res.json({
         message: "Done!"
     })
 })
 
 
-app.get('/notes', (req, res) => {
-    // Handle GET request for retrieving notes
+app.get('/notes', authMiddleware, (req, res) => {
+    const userNotes = notes.filter(note => note.username === req.username);
     res.json({
-        notes: notes
+        notes: userNotes
     })
 })
 
