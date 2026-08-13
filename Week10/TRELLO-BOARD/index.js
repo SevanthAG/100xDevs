@@ -186,7 +186,7 @@ app.get('/Organization', authMiddleware, (req, res) => {
 
     res.json({
         message: 'Organization fetched successfully',
-        organization : {
+        organization: {
             ...organization,
             members: organization.members.map(memberId => {
                 const user = USERS.find(user => user.id === memberId);
@@ -195,9 +195,9 @@ app.get('/Organization', authMiddleware, (req, res) => {
                     username: user.username
                 };
             })
-                }
-        })
-    });
+        }
+    })
+});
 
 app.get('/Boards', authMiddleware, (req, res) => {
     const userId = req.userId;
@@ -209,21 +209,29 @@ app.get('/Boards', authMiddleware, (req, res) => {
         return res.status(404).json({ message: 'Organization not found' });
     }
 
-    if (organization.admin !== userId) {
-        return res.status(403).json({ message: 'Access denied' });
-    }
-
+    const boards = BOARDS.filter(board => board.organizationId === OrganizationId);
 
     res.json({
         message: 'Boards fetched successfully',
-        boards: BOARDS
+        boards: boards
     })
 })
 
 app.get('/Issues', authMiddleware, (req, res) => {
+    const userId = req.userId;
+    const boardId = parseInt(req.query.boardId);
+
+    const board = BOARDS.find(board => board.BoardId === boardId);
+
+    if (!board) {
+        return res.status(404).json({ message: 'Board not found' });
+    }
+
+    const issues = ISSUES.filter(issue => issue.boardId === boardId);
+
     res.json({
         message: 'Issues fetched successfully',
-        issues: ISSUES
+        issues: issues
     })
 })
 
