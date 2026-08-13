@@ -1,10 +1,14 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const { authMiddleware } = require('./midlleware');
 
 const app = express();
 
 let users = [];
 let userId = 1;
+
+let todos = [];
+let todoId = 1;
 
 app.use(express.json());
 
@@ -19,11 +23,14 @@ app.post('/signup', (req, res) => {
     }
 
     users.push({
+        id: userId++,
         username,
         password
     });
 
-    res.status(201).json({ message: 'User signed up successfully' });
+    res.status(201).json({ 
+        message: 'User signed up successfully',
+    });
 })
 
 app.post('/signin', (req, res) => {
@@ -40,13 +47,37 @@ app.post('/signin', (req, res) => {
         userId: userAlreadyExists.id
     }, "todo-secret");
 
-
     res.status(200).json({
         message: 'User signed in successfully',
         token
     });
 });
 
+app.post('/todos',authMiddleware, (req, res) => {
+    const userId = req.userId;
+    const title = req.body.title;
+    const description = req.body.description;
+
+    todos.push({
+        id: todoId++,
+        userId,
+        title,
+        description
+    });
+
+    res.status(201).json({
+        message: 'Todo created successfully'
+    });
+})
+
+app.get('/todos', authMiddleware, (req, res) => {
+    const userId = req.userId;
+    const userTodos = todos.filter(todo => todo.userId === userId);
+
+    res.status(200).json({
+        todos: userTodos
+    });
+})
 
 
 app.listen(3000, () => {
