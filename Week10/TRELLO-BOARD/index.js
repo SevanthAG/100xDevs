@@ -85,9 +85,17 @@ app.post('/add-member-to-organization', authMiddleware, (req, res) => {
     // Check if the organization exists
     const organization = ORGANIZATIONS.find(org => org.OrganizationId === organizationId);
 
-    if (!organization &&  organization.admin !== userId) {
-        return res.status(404).json({ message: 'Organization not found' });
-    }
+    if (!organization) {
+    return res.status(404).json({
+        message: "Organization not found"
+    });
+}
+
+if (organization.admin !== userId) {
+    return res.status(403).json({
+        message: "Only the organization admin can add members"
+    });
+}
 
     // Check if the member exists
     const memberUserUserName = USERS.find(user => user.username === memberUserName);
@@ -108,10 +116,23 @@ app.post('/add-member-to-organization', authMiddleware, (req, res) => {
 app.post('/Board', authMiddleware, (req, res) => {
     const userId = req.userId;
     //id , tittle, organizationId
+    const OrganizationId = req.body.organizationId;
+    const title = req.body.Title;
+
+    const organization = ORGANIZATIONS.find(org => org.OrganizationId === OrganizationId);
+
+    if (!organization) {
+        return res.status(404).json({ message: 'Organization not found' });
+    }
+
+    if (organization.admin !== userId) {
+        return res.status(403).json({ message: 'Access denied' });
+    }
+
     BOARDS.push({
         BoardId: board_Id++,
-        Title: req.body.Title,
-        organizationId: req.body.organizationId
+        Title: title,
+        organizationId: OrganizationId
     })
 
     res.json({
@@ -122,12 +143,22 @@ app.post('/Board', authMiddleware, (req, res) => {
 
 app.post('/Issue', authMiddleware, (req, res) => {
     const userId = req.userId;
+    const boardId = req.body.boardId;
+    const title = req.body.Title;
+    const state = req.body.state; //NEXT, IN_PROGRESS, DONE
+
+    const board = BOARDS.find(board => board.BoardId === boardId);
+
+    if (!board) {
+        return res.status(404).json({ message: 'Board not found' });
+    }
+
     // id, tittle, boardId, state(NEXT, IN_PrOGRESS, DONE)
     ISSUES.push({
         IssueId: issue_Id++,
-        Title: req.body.Title,
-        boardId: req.body.boardId,
-        state: req.body.state
+        Title: title,
+        boardId: boardId,
+        state: state
     })
 
     res.json({
@@ -138,7 +169,51 @@ app.post('/Issue', authMiddleware, (req, res) => {
 
 
 // Get EndPoints
+
+app.get('/Organization', authMiddleware, (req, res) => {
+    const userId = req.userId;
+    const OrganizationId = parseInt(req.query.organizationId);
+
+    const organization = ORGANIZATIONS.find(org => org.OrganizationId === OrganizationId);
+
+    if (!organization) {
+        return res.status(404).json({ message: 'Organization not found' });
+    }
+
+    if (organization.admin !== userId) {
+        return res.status(403).json({ message: 'Access denied' });
+    }
+
+    res.json({
+        message: 'Organization fetched successfully',
+        organization : {
+            ...organization,
+            members: organization.members.map(memberId => {
+                const user = USERS.find(user => user.id === memberId);
+                return {
+                    id: user.id,
+                    username: user.username
+                };
+            })
+                }
+        })
+    });
+
 app.get('/Boards', authMiddleware, (req, res) => {
+    const userId = req.userId;
+    const OrganizationId = parseInt(req.query.organizationId);
+
+    const organization = ORGANIZATIONS.find(org => org.OrganizationId === OrganizationId);
+
+    if (!organization) {
+        return res.status(404).json({ message: 'Organization not found' });
+    }
+
+    if (organization.admin !== userId) {
+        return res.status(403).json({ message: 'Access denied' });
+    }
+
+
     res.json({
         message: 'Boards fetched successfully',
         boards: BOARDS
