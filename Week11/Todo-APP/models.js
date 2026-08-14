@@ -1,7 +1,10 @@
+const dns = require('dns');
+dns.setServers(['8.8.8.8']);
+
 const mongoose = require('mongoose');
 
 async function connectToDatabase() {
-    await mongoose.connect("URL")
+    await mongoose.connect("mongodb+srv://sevanthrao1406_db_user:cUCBtvUE5ysL5ao8@100xdevs.4kx41sj.mongodb.net/todo")
 }
 
 const userSchema = new mongoose.Schema({
