@@ -22,7 +22,7 @@ const organizationSchema = new mongoose.Schema({
 })
 
 const boardSchema = new mongoose.Schema({
-    Title = String,
+    Title: String,
     organizationId: mongoose.Types.ObjectId
 })
 

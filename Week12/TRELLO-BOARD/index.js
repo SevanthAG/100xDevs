@@ -122,12 +122,10 @@ app.post('/add-member-to-organization', authMiddleware, async (req, res) => {
     })
 })
 
-
 app.post('/Board', authMiddleware, async (req, res) => {
-    const userId = req.userId;
-
-    const OrganizationId = req.body.organizationId;
-    const title = req.body.Title;
+    const userId = req.userId
+    const organizationId = req.body.organizationId
+    const title = req.body.Title
 
     const organization = await organizationModel.findOne({
         _id: organizationId
@@ -136,22 +134,24 @@ app.post('/Board', authMiddleware, async (req, res) => {
     if (!organization) {
         return res.status(404).json({
             message: 'Organization not found'
-        });
+        })
     }
 
-    const isThatMemberOfOrganization = await organizationModel.findOne({
-        _id: userId
-    })
+    const isMember = organization.members.some(
+        member => member.toString() === userId.toString()
+    )
 
-    if (!isThatMemberOfOrganization) {
-        return res.status(404).json({
-            message: "Ur Not the member of organization"
+    const isAdmin = organization.admin.toString() === userId.toString()
+
+    if (!isMember && !isAdmin) {
+        return res.status(403).json({
+            message: "You are not a member of this organization"
         })
     }
 
     const newBoard = await boardModel.create({
         Title: title,
-        organizationId: OrganizationId
+        organizationId: organizationId
     })
 
     res.json({
@@ -164,16 +164,16 @@ app.post('/Issue', authMiddleware, async (req, res) => {
     const userId = req.userId;
     const boardId = req.body.boardId;
     const title = req.body.Title;
-    const state = req.body.state; //NEXT, IN_PROGRESS, DONE
+    const state = req.body.state; // NEXT, IN_PROGRESS, DONE
 
-    const board = boardModel.findOne({
+    const board = await boardModel.findOne({
         _id: boardId
     })
 
     if (!board) {
         return res.status(404).json({
             message: 'Board not found'
-        });
+        })
     }
 
     const newIssue = await issueModel.create({
@@ -187,7 +187,6 @@ app.post('/Issue', authMiddleware, async (req, res) => {
         id: newIssue._id
     })
 })
-
 
 // Get EndPoints
 // It only accesible To admin
@@ -205,7 +204,7 @@ app.get('/Organization', authMiddleware, async (req, res) => {
         });
     }
 
-    if (organization.admin.toString() !== userId) {
+    if (organization.admin.toString() !== userId.toString()) {
         return res.status(403).json({
             message: 'Access denied'
         });
@@ -229,18 +228,18 @@ app.get('/Organization', authMiddleware, async (req, res) => {
     })
 });
 
-app.get('/Boards', authMiddleware, (req, res) => {
+app.get('/Boards', authMiddleware, async (req, res) => {
     const userId = req.userId;
-    const OrganizationId = req.query.organizationId;
+    const organizationId = req.query.organizationId;
 
     const organization = await organizationModel.findOne({
-        _id: OrganizationId
+        _id: organizationId
     })
 
     if (!organization) {
         return res.status(404).json({
             message: 'Organization not found'
-        });
+        })
     }
 
     const boards = await boardModel.find({
@@ -249,31 +248,33 @@ app.get('/Boards', authMiddleware, (req, res) => {
 
     res.json({
         message: 'Boards fetched successfully',
-        boards: {
-            Title: boards.Title,
-            organizationId: boards.organizationId
-        }
+        boards: boards
     })
 })
 
-app.get('/Issues', authMiddleware, (req, res) => {
+app.get('/Issues', authMiddleware, async (req, res) => {
     const userId = req.userId;
     const boardId = req.query.boardId;
 
-    const board = BOARDS.find(board => board.BoardId === boardId);
+    const board = await boardModel.findOne({
+        _id: boardId
+    })
 
     if (!board) {
-        return res.status(404).json({ message: 'Board not found' });
+        return res.status(404).json({
+            message: 'Board not found'
+        })
     }
 
-    const issues = ISSUES.filter(issue => issue.boardId === boardId);
+    const issues = await issueModel.find({
+        boardId: boardId
+    })
 
     res.json({
         message: 'Issues fetched successfully',
         issues: issues
     })
 })
-
 
 // Delete Endpoint
 app.delete('/members', authMiddleware, async (req, res) => {
