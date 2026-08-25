@@ -284,37 +284,37 @@ app.delete('/members', authMiddleware, async (req, res) => {
 
     const organization = await organizationModel.findOne({
         _id: organizationId
-    });
+    })
 
     if (!organization) {
         return res.status(404).json({
             message: "Organization not found"
-        });
+        })
     }
 
-    if (organization.admin.toString() !== userId) {
+    if (organization.admin.toString() !== userId.toString()) {
         return res.status(403).json({
-            message: "Only the organization admin can add members"
-        });
+            message: "Only the organization admin can remove members"
+        })
     }
 
     const memberUser = await userModel.findOne({
         username: memberUserName
-    });
+    })
 
-    if (!memberUserName) {
+    if (!memberUser) {
         return res.status(404).json({
             message: 'Member not found'
-        });
+        })
     }
 
     organization.members.pull(memberUser._id);
+
     await organization.save();
 
     res.json({
         message: 'Member deleted from organization'
     })
-
 })
 
 app.listen(3000)
