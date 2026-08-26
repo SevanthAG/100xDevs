@@ -35,7 +35,8 @@ app.post('/signin',async (req, res)=> {
 
     const result = await pool.query(
         `SELECT * FROM users 
-        WHERE email = '$1' AND password='$2'`
+        WHERE email =$1 AND password=$2`,
+        [username, password]
     )
     const isExist = result.rows[0]
 
