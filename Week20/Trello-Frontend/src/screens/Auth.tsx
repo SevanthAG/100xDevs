@@ -1,7 +1,11 @@
+import { LeftAuth } from "../components/LeftAuth"
+import { RightAuth } from "../components/RightAuth"
+
 export const Auth = () => {
   return (
-    <div>
-      <h1>Auth</h1>
+    <div className="auth-page">
+      <LeftAuth />
+      <RightAuth />
     </div>
   )
 }
