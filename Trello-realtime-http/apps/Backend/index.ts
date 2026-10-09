@@ -1,15 +1,25 @@
 import express from "express"
+import cors from "cors";
 
 const app = express()
 
 app.use(express.json());
+app.use(cors())
 
 interface Issue {
     id: number,
     title: string,
     section: string
 }
-const ISSUES: Issue[] = []
+const ISSUES: Issue[] = [{
+    id: 1,
+    title: "Fix G",
+    section: "done"
+},{
+    id: 1,
+    title: "Fix A",
+    section: "todo"
+}]
 
 app.post('/issue', (req, res) => {
     const { title, section } = req.body;
@@ -42,4 +52,4 @@ app.post('/move', (req, res) => {
 
 })
 
-app.listen(3000);
+app.listen(3001);
