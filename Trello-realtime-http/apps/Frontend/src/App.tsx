@@ -28,7 +28,8 @@ export function App() {
       <div className="flex-1">
         Todo
         <Input id="todoInput" type="text" placeholder="issue Title" />
-        <button onClick={() => {
+        <button className="border"
+         onClick={() => {
           axios.post(`${Backend_Endpoint}/issue`, {
             title: document.getElementById("todoInput").value,
             section: "todo"
@@ -40,7 +41,8 @@ export function App() {
       <div className="flex-1">
         On Progress
         <Input id="onProgress" type="text" placeholder="issue Title" />
-        <button onClick={() => {
+        <button className="border" 
+        onClick={() => {
           axios.post(`${Backend_Endpoint}/issue`, {
             title: document.getElementById("onProgress").value,
             section: "on_progress"
@@ -52,7 +54,7 @@ export function App() {
       <div className="flex-1">
         Done
         <Input id="done" type="text" placeholder="issue Title" />
-        <button onClick={() => {
+        <button className="border" onClick={() => {
           axios.post(`${Backend_Endpoint}/issue`, {
             title: document.getElementById("done").value,
             section: "done"
