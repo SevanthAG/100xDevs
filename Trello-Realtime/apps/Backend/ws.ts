@@ -6,7 +6,7 @@ interface Issue {
     title: string,
     section: string
 }
-const ISSUES: Issue[] = [{
+let ISSUES: Issue[] = [{
     id: 1,
     title: "Fix G",
     section: "done"
@@ -39,6 +39,15 @@ wss.on("connection", (socket) => {
             connections.forEach(s => s.send(JSON.stringify({
                 type: "issue_added",
                 issue : newIssue
+            })))
+        }
+
+        if(parsedData.type == "Issue_deleted"){
+            ISSUES = ISSUES.filter(issue => issue.id != parsedData.issueId)
+            
+            connections.forEach(s => s.send(JSON.stringify({
+                type: "Issue_deleted",
+                issueId : parsedData.issueId
             })))
         }
     })

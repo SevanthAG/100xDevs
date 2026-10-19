@@ -1,8 +1,6 @@
-import axios from "axios";
 import "./index.css";
 import { useEffect, useState } from "react";
 import { Input } from "./components/ui/input";
-import { Section } from "lucide-react";
 
 // const Backend_Endpoint = "http://localhost:3001"
 
@@ -21,8 +19,13 @@ export function App() {
         setIssues(parsedData.issues)
       }
       if (parsedData.type == "issue_added") {
-        setIssues(i => [...i, parsedData.issue])
+        setIssues(i => [...i, parsedData.issue]);
       }
+
+      if (parsedData.type == "Issue_deleted") {
+        setIssues(issues => issues.filter(x => x.id != parsedData.issueId))
+      }
+      
     }
 
   }, [])
@@ -40,7 +43,7 @@ export function App() {
               section: "todo"
             }))
           }}>Add issue</button>
-        {issues.filter(i => i.section == "todo").map(issue => <Card title={issue.title} />)}
+        {issues.filter(i => i.section == "todo").map(issue => <Card ws={ws} id={issue.id} title={issue.title} />)}
       </div>
 
       <div className="flex-1">
@@ -54,7 +57,7 @@ export function App() {
               section: "onProgress"
             }))
           }}>Add Issue</button>
-        {issues.filter(i => i.section == "onProgress").map(issue => <Card title={issue.title} />)}
+        {issues.filter(i => i.section == "onProgress").map(issue => <Card ws={ws} id={issue.id} title={issue.title} />)}
       </div>
 
       <div className="flex-1">
@@ -67,15 +70,22 @@ export function App() {
             section: "done"
           }))
         }}>Add Issue</button>
-        {issues.filter(i => i.section == "done").map(issue => <Card title={issue.title} />)}
+        {issues.filter(i => i.section == "done").map(issue => <Card ws={ws} id={issue.id} title={issue.title} />)}
       </div>
     </div>
   );
 }
 
-function Card({ title }) {
+function Card({ ws ,title, id }) {
   return <div className="border m-4 p-4">
     {title}
+    <button className="border m-6" 
+    onClick={()=> {
+      ws.send(JSON.stringify({
+        type: "Issue_deleted",
+        issueId: id
+      }))
+}}>Delete</button>
   </div>
 }
 
