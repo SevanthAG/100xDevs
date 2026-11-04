@@ -25,7 +25,6 @@ export function App() {
       if (parsedData.type == "Issue_deleted") {
         setIssues(issues => issues.filter(x => x.id != parsedData.issueId))
       }
-      
     }
 
   }, [])

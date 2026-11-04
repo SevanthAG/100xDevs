@@ -1,6 +1,5 @@
 import { WebSocketServer } from "ws";
 
-
 interface Issue {
     id: number,
     title: string,
