@@ -2,15 +2,12 @@ import axios from "axios";
 import Post from "./Post";
 import { useState } from "react";
 
-
 function App() {
-  const [data, setData ] = useState([]);
+  const [data, setData] = useState([]);
 
-  axios.get("https://jsonplaceholder.typicode.com/posts")
-  .then(response => {
-    setData(response.data)
-  })
-
+  axios.get("https://jsonplaceholder.typicode.com/posts").then((response) => {
+    setData(response.data);
+  });
 
   return (
     <>
