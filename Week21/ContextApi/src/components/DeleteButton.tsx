@@ -1,17 +1,26 @@
+import { useContext } from "react";
+import { setTodosContext } from "../context";
+
+
 type todoType = {
   title: string;
   id: string;
-  setTodo: any;
 };
 
-const DeleteButton = ({id, setTodo}: todoType) => {
+const { setTodo } = useContext(setTodosContext);
+
+const DeleteButton = ({ id }: todoType) => {
   return (
     <div>
-        <button onClick={()=>{
-            setTodo(todo => todo.filter(x => x.id != id))
-        }}>Delete Todo</button>
+      <button
+        onClick={() => {
+          setTodo((todo) => todo.filter((x) => x.id != id));
+        }}
+      >
+        Delete Todo
+      </button>
     </div>
-  )
-}
+  );
+};
 
-export default DeleteButton
+export default DeleteButton;

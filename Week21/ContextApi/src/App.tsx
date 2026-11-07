@@ -1,6 +1,10 @@
 import { useTodos } from "./hooks/useTodos";
 import Todo from "./Todo";
-import { setTodosContext } from "./context/context";
+import { setTodosContext } from "./context";
+type todoType = {
+  title: string;
+  id: string;
+};
 
 const App = () => {
   let { todo, setTodo } = useTodos();
@@ -9,7 +13,7 @@ const App = () => {
     <setTodosContext.Provider value={{setTodo}}>
       <div>
         {todo.map((t) => (
-          <Todo title={t.title} id={t.id} setTodo={setTodo} />
+          <Todo title={t.title} id={t.id} />
         ))}
       </div>
     </setTodosContext.Provider>
